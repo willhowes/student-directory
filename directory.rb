@@ -2,7 +2,7 @@
 
 def print_menu
   puts "1. Input the students\n2. Print the student list\n"\
-  "3. Save the list to 'students.csv'\n4. Load the list from 'students.csv'\n"\
+  "3. Save the student list\n4. Load a student list\n"\
   "9. Exit"
 end
 
@@ -22,7 +22,7 @@ def process_user_selection(selection)
   when '3'
     save_students
   when '4'
-    load_students
+    user_load_students
   when '9'
     puts "\nEXITING GAME..."
     sleep 1
@@ -69,36 +69,47 @@ def save_students
   puts "Please confirm the file name to save to: "
   user_filename = gets.chomp
   user_filename = 'students.csv' if user_filename == ""
-  file = File.open(user_filename, "w")
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort]].join(",")
-    file.puts student_data
+  file = File.open(user_filename, "w") do |file|
+    @students.each do |student|
+      student_data = [student[:name], student[:cohort]].join(",")
+      file.puts student_data
+    end
+    puts "\nList of students saved to #{user_filename}...\n\n"
   end
-  puts "\nList of students saved to #{user_filename}...\n\n"
-  file.close
 end
 
 def load_students(filename = 'students.csv')
-  puts "\n---LOAD STUDENTS SELECTED---"
-  file = File.open(filename, 'r')
-  file.readlines.each do |line|
-    @name, cohort = line.chomp.split(',')
-    add_students
+  file = File.open(filename, 'r') do |file|
+    file.readlines.each do |line|
+      @name, cohort = line.chomp.split(',')
+      add_students
+    end
+    puts "\nLoaded #{@students.count} students from #{filename}\n"
   end
-  file.close
 end
 
-def try_load_students
-  filename = ARGV.first # first argument from the command line
-  return load_students if filename.nil? # load default file if no filename given
+def user_load_students
+  puts "\n---LOAD A STUDENT LIST SELECTED---"
+  puts 'Please confirm the student list file you would like to load: '
+  filename = gets.chomp
+  filename = 'students.csv' if filename == ""
+  check_file_exists(filename)
+end
+
+def check_file_exists(filename)
   if File.exists?(filename) # if it exists
     load_students(filename)
-    puts "Loaded #{@students.count} from #{filename}"
   else # if it doesn't exist
-    puts "Sorry #{filename} doesn't exist"
-    exit # quit the program
+    puts "Sorry #{filename} doesn't exist. Try again."
+    user_load_students
   end
 end
 
-try_load_students
+# def try_load_students
+#   filename = ARGV.first # first argument from the command line
+#   return load_students if filename.nil? # load default file if no filename given
+#   check_file_exists(filename)
+# end
+
+# try_load_students
 interactive_menu_loop
