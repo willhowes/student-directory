@@ -1,11 +1,9 @@
 @students = [] # an array accessible to all methods
 
 def print_menu
-  puts '1. Input the students'
-  puts '2. Show the students'
-  puts "3. Save the list to 'students.csv'"
-  puts "4. Load the list from 'students.csv'"
-  puts '9. Exit'
+  puts "1. Input the students\n2. Show the students\n"\
+  "3. Save the list to 'students.csv'\n4. Load the list from 'students.csv'\n"\
+  "9. Exit"
 end
 
 def interactive_menu
@@ -36,14 +34,14 @@ def input_students
   puts "Please enter the names of the students"
   puts "To finish, just hit return twice"
   # get the first names
-  name = STDIN.gets.chomp
+  @name = STDIN.gets.chomp
   # while the name is not empty, repeat this code
-  while !name.empty? do
+  while !@name.empty? do
     # add the student hash to the array
-    @students << {name: name, cohort: :november}
+    add_students
     puts "Now we have #{@students.count} students"
     # get another name from the user
-    name = STDIN.gets.chomp
+    @name = STDIN.gets.chomp
   end
 end
 
@@ -56,6 +54,10 @@ end
 def print_header
   puts 'The students of Villains Academy'
   puts '------------'
+end
+
+def add_students
+  @students << {name: @name, cohort: :november}
 end
 
 def print_students_list
@@ -85,21 +87,24 @@ end
 def load_students(filename = 'students.csv')
   file = File.open(filename, 'r')
   file.readlines.each do |line|
-    name, cohort = line.chomp.split(',')
-      @students << {name: name, cohort: cohort.to_sym}
+    @name, cohort = line.chomp.split(',')
+      add_students
   end
   file.close
 end
 
 def try_load_students
   filename = ARGV.first # first argument from the command line
-  return if filename.nil? # get out of the method if it isn't given
-  if File.exists?(filename) # if it exists
-    load_students(filename)
-    puts "Loaded #{@students.count} from #{filename}"
-  else # if it doesn't exist
-      puts "Sorry #{filename} doesn't exist"
-      exit # quit the program
+  if filename.nil? # load default file if no filename given
+    load_students
+  else
+    if File.exists?(filename) # if it exists
+      load_students(filename)
+      puts "Loaded #{@students.count} from #{filename}"
+    else # if it doesn't exist
+        puts "Sorry #{filename} doesn't exist"
+        exit # quit the program
+    end
   end
 end
 
