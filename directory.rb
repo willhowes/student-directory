@@ -6,25 +6,25 @@ def print_menu
   "9. Exit"
 end
 
-def interactive_menu
+def interactive_menu_loop
   loop do
     print_menu
-    process(STDIN.gets.chomp)
+    process_user_selection(STDIN.gets.chomp)
   end
 end
 
-def process(selection)
+def process_user_selection(selection)
   case selection
   when '1'
     input_students
   when '2'
-    show_students
+    print_student_list
   when '3'
     save_students
   when '4'
     load_students
   when '9'
-    exit # this will cause the program to terminate
+    exit
   else
     puts "I don't know what you meant, try again"
   end
@@ -45,36 +45,25 @@ def input_students
   end
 end
 
-def show_students
-  puts ''
-  puts 'The students of Villains Academy'
-  puts '------------'
-  print_students_list
-  puts "Overall, we have #{@students.count} great students"
-  puts '------------'
-  puts ''
+def print_student_list
+  puts "\nThe students of Villains Academy \n------------"
+  if @students.length >= 1
+    @students.each do |student|
+      puts "#{student[:name]} (#{student[:cohort]} cohort)"
+    end
+  end
+  puts "\nOverall, we have #{@students.count} great students\n------------\n\n"
 end
 
 def add_students
   @students << {name: @name, cohort: :november}
 end
 
-def print_students_list
-  if @students.length >= 1
-    @students.each do |student|
-      puts "#{student[:name]} (#{student[:cohort]} cohort)"
-    end
-  end
-end
-
 def save_students
-  # open the file for writing
   file = File.open("students.csv", "w")
-  # iterate over the array of students
   @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
+    student_data = [student[:name], student[:cohort]].join(",")
+    file.puts student_data
   end
   file.close
 end
@@ -83,25 +72,22 @@ def load_students(filename = 'students.csv')
   file = File.open(filename, 'r')
   file.readlines.each do |line|
     @name, cohort = line.chomp.split(',')
-      add_students
+    add_students
   end
   file.close
 end
 
 def try_load_students
   filename = ARGV.first # first argument from the command line
-  if filename.nil? # load default file if no filename given
-    load_students
-  else
-    if File.exists?(filename) # if it exists
-      load_students(filename)
-      puts "Loaded #{@students.count} from #{filename}"
-    else # if it doesn't exist
-        puts "Sorry #{filename} doesn't exist"
-        exit # quit the program
-    end
+  return load_students if filename.nil? # load default file if no filename given
+  if File.exists?(filename) # if it exists
+    load_students(filename)
+    puts "Loaded #{@students.count} from #{filename}"
+  else # if it doesn't exist
+    puts "Sorry #{filename} doesn't exist"
+    exit # quit the program
   end
 end
 
 try_load_students
-interactive_menu
+interactive_menu_loop
