@@ -69,7 +69,7 @@ def save_students
   puts "Please confirm the file name to save to: "
   user_filename = gets.chomp
   user_filename = 'students.csv' if user_filename == ""
-  file = File.open(user_filename, "w") do |file|
+  File.open(user_filename, "w") do |file|
     @students.each do |student|
       student_data = [student[:name], student[:cohort]].join(",")
       file.puts student_data
@@ -79,7 +79,7 @@ def save_students
 end
 
 def load_students(filename = 'students.csv')
-  file = File.open(filename, 'r') do |file|
+  File.open(filename, 'r') do |file|
     file.readlines.each do |line|
       @name, cohort = line.chomp.split(',')
       add_students
