@@ -46,14 +46,13 @@ def input_students
 end
 
 def show_students
-  print_header
-  print_students_list
-  print_footer
-end
-
-def print_header
+  puts ''
   puts 'The students of Villains Academy'
   puts '------------'
+  print_students_list
+  puts "Overall, we have #{@students.count} great students"
+  puts '------------'
+  puts ''
 end
 
 def add_students
@@ -66,10 +65,6 @@ def print_students_list
       puts "#{student[:name]} (#{student[:cohort]} cohort)"
     end
   end
-end
-
-def print_footer
-  puts "Overall, we have #{@students.count} great students"
 end
 
 def save_students
